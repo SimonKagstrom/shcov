@@ -1,0 +1,78 @@
+#!/usr/bin/env python
+
+# export PS4='SHCOV:::${BASH_SOURCE}:::${LINENO}::: SHCOV:'
+
+import os, sys, subprocess, pickle, signal, shcov_file
+
+from shcov_file import File
+
+class ShcovCollector:
+    def __init__(self, args, outpath = "/tmp/shcov"):
+        self.files = {}
+        self.args = args
+        self.outpath = outpath
+
+        # Where we execute this script
+        os.environ["PS4"] = "SHCOV:::${BASH_SOURCE}:::${LINENO}::: SHCOV:"
+
+        self.process = None
+
+    def handle_line(self, line):
+        parts = line.split(":::")
+
+        file_name = parts[1]
+        line_nr = parts[2]
+
+        # Get the file for this path
+        path = os.path.abspath(file_name)
+        try:
+            file = self.files[path]
+        except KeyError, e:
+            # Not found, try to load it or otherwise create a new one
+            try:
+                file = shcov_file.load(self.outpath + path + ".pkl")
+            except Exception, e:
+                # Create a new one (no such file)
+                file = File(path)
+            self.files[path] = file
+        file.add_to_line(line_nr)
+
+    def run(self):
+        self.process = subprocess.Popen( ['bash', '-x'] + self.args,  stdin = sys.stdin,
+                                         stdout = sys.stdout, stderr = subprocess.PIPE )
+
+        tmp, stderr = self.process.communicate()
+        for line in stderr.splitlines():
+            if line.find("SHCOV:::") != -1:
+                self.handle_line(line)
+            else:
+                sys.stdout.write(line)
+
+    def save(self):
+        for file in self.files.values():
+            try:
+                os.makedirs( os.path.dirname(self.outpath + file.path) )
+            except OSError, e:
+                pass
+            file.save(self.outpath + file.path + ".pkl")
+
+def usage():
+    print "Usage: shcov script-name [script args]"
+    sys.exit(1)
+
+glob_sc = None
+
+def sighandler(signum, frame):
+    print "I'm here"
+    glob_sc.save()
+    sys.exit(1)
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        usage()
+
+    sc = ShcovCollector(sys.argv[1:])
+    glob_sc = sc
+    signal.signal(signal.SIGTERM, sighandler)
+    sc.run()
+    sc.save()
