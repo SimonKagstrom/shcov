@@ -2,15 +2,16 @@
 
 # export PS4='SHCOV:::${BASH_SOURCE}:::${LINENO}::: SHCOV:'
 
-import os, sys, subprocess, pickle, signal, shcov_file
+import os, sys, subprocess, pickle, signal, shcov_file, getopt
 
 from shcov_file import File
 
 class ShcovCollector:
-    def __init__(self, args, outpath = "/tmp/shcov"):
+    def __init__(self, args, outpath = "/tmp/shcov", shell = "bash"):
         self.files = {}
         self.args = args
         self.outpath = outpath
+        self.shell = shell
 
         # Where we execute this script
         os.environ["PS4"] = "SHCOV:::${BASH_SOURCE}:::${LINENO}::: SHCOV:"
@@ -38,11 +39,16 @@ class ShcovCollector:
         file.add_to_line(line_nr)
 
     def run(self):
-        self.process = subprocess.Popen( ['bash', '-x'] + self.args,  stdin = sys.stdin,
+        self.process = subprocess.Popen( [self.shell, '-x'] + self.args,  stdin = sys.stdin,
                                          stdout = sys.stdout, stderr = subprocess.PIPE )
 
-        tmp, stderr = self.process.communicate()
-        for line in stderr.splitlines():
+        while True:
+            # Check if the process has exited
+            ret = self.process.poll()
+            if ret != None:
+                return ret
+
+            line = self.process.stderr.readline()
             if line.find("SHCOV:::") != -1:
                 self.handle_line(line)
             else:
@@ -57,13 +63,16 @@ class ShcovCollector:
             file.save(self.outpath + file.path + ".pkl")
 
 def usage():
-    print "Usage: shcov script-name [script args]"
+    print "Usage: shcov [-h] [--output=where] [--shell=what] script...\n"
+    print "Produce coverage data for 'script'. Options are\n"
+    print "  --output=where  write data to 'where' instead of /tmp/shcov"
+    print "  --shell=what    ues 'what' as shell instead of 'bash'"
+
     sys.exit(1)
 
 glob_sc = None
 
 def sighandler(signum, frame):
-    print "I'm here"
     glob_sc.save()
     sys.exit(1)
 
@@ -71,8 +80,26 @@ if __name__ == "__main__":
     if len(sys.argv) < 2:
         usage()
 
-    sc = ShcovCollector(sys.argv[1:])
+    outpath = "/tmp/shcov"
+    shell = "bash"
+
+    optlist, args = getopt.gnu_getopt(sys.argv[1:], "ho:s:", ["help", "output=", "shell="])
+    for opt, arg in optlist:
+	if opt in ("-h", "--help"):
+	    usage()
+        if opt in ("-o", "--output"):
+            outpath = optarg
+        if opt in ("-s", "--shell"):
+            shell = optarg
+
+    sc = ShcovCollector(sys.argv[1:], outpath = outpath, shell = shell)
     glob_sc = sc
     signal.signal(signal.SIGTERM, sighandler)
-    sc.run()
+    out = 1
+    try:
+        out = sc.run()
+    except KeyboardInterrupt, e:
+        # Just save
+        pass
     sc.save()
+    sys.exit(out)
