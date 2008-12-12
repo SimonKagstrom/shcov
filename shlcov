@@ -6,7 +6,7 @@ from shcov_file import File
 from shcov_utils import *
 
 # Regexp to match functions
-fn_regexp_str = "[a-z,A-Z,_]+[a-z,A-Z,_,0-9]*[\t, ]*\([\t, ]*\)[\t, ]*\{"
+fn_regexp_str = "[a-z,A-Z,_]+[a-z,A-Z,_,0-9]*[\t, ]*\([\t, ]*\)[\t, ]*"
 fn_regexp = re.compile(fn_regexp_str)
 
 class ShcovDataOutput:
@@ -20,10 +20,10 @@ class ShcovDataOutput:
         tmp = line.strip()
         if tmp.startswith('#'):
             return False
-        if tmp.startswith('function ') or tmp.startswith('}') or fn_regexp.match(tmp):
+        if tmp.startswith('function ') or tmp.startswith('}') or tmp == "{" or fn_regexp.match(tmp):
             # Not really true, but it is never executed
             return False
-        if tmp.startswith("else") or tmp == "fi" or tmp == "done" or tmp == "esac" or tmp == ";;":
+        if tmp.startswith("else") or tmp.startswith("then") or tmp == "fi" or tmp == "done" or tmp == "esac" or tmp == ";;":
             return False
         if tmp == "":
             return False
