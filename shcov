@@ -7,7 +7,7 @@ import os, sys, subprocess, pickle, signal, shcov_file, getopt
 from shcov_file import File
 
 class ShcovCollector:
-    def __init__(self, args, outpath = "/tmp/shcov", shell = "bash"):
+    def __init__(self, args, outpath = "/tmp/shcov", shell = ["bash", "-x"]):
         self.files = {}
         self.args = args
         self.outpath = outpath
@@ -39,7 +39,7 @@ class ShcovCollector:
         file.add_to_line(line_nr)
 
     def run(self):
-        self.process = subprocess.Popen( [self.shell, '-x'] + self.args,  stdin = sys.stdin,
+        self.process = subprocess.Popen( self.shell + self.args,  stdin = sys.stdin,
                                          stdout = sys.stdout, stderr = subprocess.PIPE )
 
         while True:
@@ -66,7 +66,7 @@ def usage():
     print "Usage: shcov [-h] [--output=where] [--shell=what] script...\n"
     print "Produce coverage data for 'script'. Options are\n"
     print "  --output=where  write data to 'where' instead of /tmp/shcov"
-    print "  --shell=what    ues 'what' as shell instead of 'bash'"
+    print "  --shell=what    ues 'what' (including arguments) as shell instead of 'bash -x'"
 
     sys.exit(1)
 
@@ -81,18 +81,21 @@ if __name__ == "__main__":
         usage()
 
     outpath = "/tmp/shcov"
-    shell = "bash"
+    shell = ["bash", "-x"]
 
     optlist, args = getopt.gnu_getopt(sys.argv[1:], "ho:s:", ["help", "output=", "shell="])
     for opt, arg in optlist:
 	if opt in ("-h", "--help"):
 	    usage()
         if opt in ("-o", "--output"):
-            outpath = optarg
+            outpath = arg
         if opt in ("-s", "--shell"):
-            shell = optarg
+            shell = arg.split()
 
-    sc = ShcovCollector(sys.argv[1:], outpath = outpath, shell = shell)
+    if len(args) < 1:
+        usage()
+
+    sc = ShcovCollector(args, outpath = outpath, shell = shell)
     glob_sc = sc
     signal.signal(signal.SIGTERM, sighandler)
     out = 1

@@ -41,6 +41,11 @@ class ShcovDataOutput:
         file.executed_lines = len(file.lines.items())
 
     def write_header(self, of, basename, path_to_helpers, total_lines, executed_lines):
+
+        # No div-by-zero please
+        if total_lines == 0:
+            total_lines = 1
+
         # Taken from lcov
         header="""<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">
 
