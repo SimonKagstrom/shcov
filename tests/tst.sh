@@ -17,7 +17,7 @@ if [ $# -gt 1 ]; then
     echo hejsan
 fi
 
+dn=`dirname $0`
 echo "mibb" > /tmp/a
 
-source second-tst.sh
-
+source $dn/second-tst.sh
