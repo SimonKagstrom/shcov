@@ -43,16 +43,19 @@ class ShcovCollector:
                                          stdout = sys.stdout, stderr = subprocess.PIPE )
 
         while True:
-            # Check if the process has exited
-            ret = self.process.poll()
-            if ret != None:
-                return ret
+            # Write out everything on stderr
+            self.process.stderr.flush()
 
             line = self.process.stderr.readline()
             if line.find("SHCOV:::") != -1:
                 self.handle_line(line)
             else:
                 sys.stdout.write(line)
+
+            # Check if the process has exited
+            ret = self.process.poll()
+            if ret != None:
+                return ret
 
     def save(self):
         for file in self.files.values():
