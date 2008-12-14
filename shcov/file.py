@@ -11,7 +11,7 @@
 ######################################################################
 import pickle, md5, os
 
-from shcov_utils import *
+from utils import *
 
 class File:
     def __init__(self, path):

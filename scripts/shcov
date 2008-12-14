@@ -13,9 +13,12 @@
 
 # export PS4='SHCOV:::${BASH_SOURCE}:::${LINENO}::: SHCOV:'
 
-import os, sys, subprocess, pickle, signal, shcov_file, getopt
+import os, sys, subprocess, pickle, signal, getopt
 
-from shcov_file import File
+sys.path.append(os.path.abspath(sys.path[0] + "/../"))
+import shcov
+
+from shcov.file import File
 
 class ShcovCollector:
     def __init__(self, args, outpath = "/tmp/shcov", shell = ["bash", "-x"]):
@@ -42,7 +45,7 @@ class ShcovCollector:
 	except KeyError, e:
 	    # Not found, try to load it or otherwise create a new one
 	    try:
-		file = shcov_file.load(self.outpath + path + ".pkl")
+		file = shcov.file.load(self.outpath + path + ".pkl")
 	    except Exception, e:
 		# Create a new one (no such file)
 		file = File(path)

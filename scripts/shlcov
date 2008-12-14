@@ -11,10 +11,13 @@
 ##
 ######################################################################
 
-import os, sys, shcov_file, time, re, getopt
+import os, sys, time, re, getopt
 
-from shcov_file import File
-from shcov_utils import *
+sys.path.append(os.path.abspath(sys.path[0] + "/../"))
+
+import shcov
+from shcov.file import File
+from shcov.utils import *
 
 # Regexp to match functions
 fn_regexp_str = "[a-z,A-Z,_]+[a-z,A-Z,_,0-9]*[\t, ]*\([\t, ]*\)[\t, ]*"
@@ -301,7 +304,7 @@ class ShcovDataOutput:
 	    pass
 	for root, dirs, files in os.walk(self.inpath, topdown=False):
 	    for name in files:
-		file = shcov_file.load(os.path.join(root, name))
+		file = shcov.file.load(os.path.join(root, name))
 
 		self.files.append(file)
 
