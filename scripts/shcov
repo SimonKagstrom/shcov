@@ -49,8 +49,14 @@ class ShcovCollector:
 	    except Exception, e:
 		# Create a new one (no such file)
 		file = File(path)
+            # And create the dir to save it in
+	    try:
+		os.makedirs( os.path.dirname(self.outpath + file.path) )
+	    except OSError, e:
+		pass
 	    self.files[path] = file
 	file.add_to_line(line_nr)
+        file.save(self.outpath + file.path + ".pkl")
 
     def run(self):
 	self.process = subprocess.Popen( self.shell + self.args,  stdin = sys.stdin,
@@ -75,10 +81,6 @@ class ShcovCollector:
 
     def save(self):
 	for file in self.files.values():
-	    try:
-		os.makedirs( os.path.dirname(self.outpath + file.path) )
-	    except OSError, e:
-		pass
 	    file.save(self.outpath + file.path + ".pkl")
 
 def usage():

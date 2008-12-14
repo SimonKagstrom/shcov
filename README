@@ -1,6 +1,9 @@
 A gcov and lcov coverage test tool for bourne shell / bash scripts
 
-Installation:
+Installation (run as root):
 
    umask 0022
-   sudo python setup.py install
+   python setup.py install
+
+For usage information, read the man pages or take a look at
+http://shcov.googlecode.com

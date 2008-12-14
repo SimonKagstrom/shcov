@@ -1,4 +1,3 @@
-
 PROGRAM_NAME = "shcov"
 PROGRAM_VERSION = 1
 

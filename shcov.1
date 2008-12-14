@@ -1,0 +1,25 @@
+.TH SHCOV 1 "December 14, 2008"
+.SH NAME
+shcov - collect execution coverage information for shell scripts
+.SH DESCRIPTION
+.PP
+shcov collects coverage data for bourne shell and bash scripts similar to gcov
+for C/C++ programs. It is used together with the
+.I shlcov
+tool to create HTML output of coverage information.
+.SH SYNOPSIS
+\fBshcov [-o|--output=where] [-s|--shell=shell] script ...\fR
+.TP
+\fB\-o, --output=\fR \fIwhere\fR
+Place output in \fIwhere\fR instead of \fI/tmp/shcov\fR
+.PP
+.TP
+\fB\-s, --shell=\fR \fIwhat\fR
+Use shell command line \fIwhat\fR instead of \fIbash -x\fR
+.PP
+.SH HOMEPAGE
+http://shcov.googlecode.com
+.SH SEE ALSO
+.BR shlcov (1)
+.SH AUTHOR
+This manual page was written by Simon Kagstrom <simon.kagstrom@gmail.com>

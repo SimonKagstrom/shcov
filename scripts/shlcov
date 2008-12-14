@@ -21,8 +21,11 @@ from shcov.file import File
 from shcov.utils import *
 
 # Regexp to match functions
-fn_regexp_str = "[a-z,A-Z,_]+[a-z,A-Z,_,0-9]*[\t, ]*\([\t, ]*\)[\t, ]*"
-fn_regexp = re.compile(fn_regexp_str)
+fn_regexp = re.compile("\A(function[\t, ]+)*[a-z,A-Z,_]+[a-z,A-Z,_,0-9]*[\t, ]*\([\t, ]*\)[\t, ]*")
+brace_regexp = re.compile("\A(\{|\}){1}")
+
+else_then_done_regexp = re.compile("\A(else|then|fi|done|esac|;;){1}")
+case_nr_regexp = re.compile("\A(([\',\",0-9,a-z,A-Z,_, ]+)|\*{1})\)")
 
 class ShcovDataOutput:
     def __init__(self, script_base, inpath, outpath):
@@ -44,11 +47,15 @@ class ShcovDataOutput:
 	tmp = line.strip()
 	if tmp.startswith('#'):
 	    return False
-	if tmp.startswith('function ') or tmp.startswith('}') or tmp == "{" or fn_regexp.match(tmp):
-	    # Not really true, but it is never executed
+        # Functions and braces
+	if fn_regexp.match(tmp) or brace_regexp.match(tmp):
 	    return False
-	if tmp.startswith("else") or tmp.startswith("then") or tmp == "fi" or tmp == "done" or tmp == "esac" or tmp == ";;":
+        # fi/else/esac etc
+	if else_then_done_regexp.match(tmp):
 	    return False
+        if case_nr_regexp.match(tmp):
+            return False
+        # Empty string
 	if tmp == "":
 	    return False
 	return True
@@ -179,7 +186,7 @@ class ShcovDataOutput:
 		    of.write("""<span class="lineNum">     %5d</span><span class="lineNoCov">              0 :  %s</span>\n""" %
 			     (nr, line))
 		else:
-		    of.write("""<span class="lineNum">     %5d</span>                : %s\n""" % (nr, line))
+		    of.write("""<span class="lineNum">     %5d</span>                :  %s\n""" % (nr, line))
 	    nr = nr + 1
 	of.write(table_end)
 
