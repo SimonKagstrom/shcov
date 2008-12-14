@@ -42,6 +42,7 @@ class ShcovCollector:
         self.process = subprocess.Popen( self.shell + self.args,  stdin = sys.stdin,
                                          stdout = sys.stdout, stderr = subprocess.PIPE )
 
+        ret = None
         while True:
             # Write out everything on stderr
             self.process.stderr.flush()
@@ -52,10 +53,11 @@ class ShcovCollector:
             else:
                 sys.stdout.write(line)
 
-            # Check if the process has exited
-            ret = self.process.poll()
+            # This looks stupid, but we want one more read to get
+            # the last output when the process exits
             if ret != None:
                 return ret
+            ret = self.process.poll()
 
     def save(self):
         for file in self.files.values():
