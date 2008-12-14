@@ -1,0 +1,6 @@
+A gcov and lcov coverage test tool for bourne shell / bash scripts
+
+Installation:
+
+   umask 0022
+   sudo python setup.py install
