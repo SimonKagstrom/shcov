@@ -11,11 +11,12 @@
 ##
 ######################################################################
 
-import os, sys, time, re, getopt
+import os, sys, time, re, getopt, shutil
 
-sys.path.append(os.path.abspath(sys.path[0] + "/../"))
+base_dir = os.path.abspath(sys.path[0] + "/../")
+sys.path.append(base_dir)
 
-import shcov
+import shcov, shcov.config
 from shcov.file import File
 from shcov.utils import *
 
@@ -30,6 +31,14 @@ class ShcovDataOutput:
 	self.outpath = outpath
 
 	self.files = []
+
+        # Setup the data path (helper files)
+        try:
+            self.data_path = base_dir + "/data"
+            os.lstat(self.data_path)
+        except:
+            # No such dir, fall back to /usr/share
+            self.data_path = "/usr/share/" + shcov.config.PROGRAM_NAME.lower() + "/data"
 
     def line_is_code(self, line):
 	tmp = line.strip()
@@ -304,11 +313,20 @@ class ShcovDataOutput:
 	    pass
 	for root, dirs, files in os.walk(self.inpath, topdown=False):
 	    for name in files:
-		file = shcov.file.load(os.path.join(root, name))
-
-		self.files.append(file)
+                path = os.path.join(root, name)
+                try:
+                    file = shcov.file.load(path)
+                    self.files.append(file)
+                except ImportError, e:
+                    print "Could not load", path, "ignoring"
 
 	self.handle_files()
+
+        # And copy all the data
+	for root, dirs, files in os.walk(self.data_path, topdown=False):
+	    for name in files:
+                path = os.path.join(root, name)
+                shutil.copyfile(path, os.path.join(self.outpath, name))
 
 def usage():
     print "Usage: shlcov [--script-base=path] datadir outdir\n"
