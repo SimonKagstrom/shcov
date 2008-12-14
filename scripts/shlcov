@@ -65,11 +65,15 @@ class ShcovDataOutput:
 
 	# OK, this is ugly: Just put these in the object...
 	file.total_lines = 0
+	file.executed_lines = 0
 
+	nr = 1
 	for line in source_data.splitlines():
 	    if self.line_is_code(line):
 		file.total_lines = file.total_lines + 1
-	file.executed_lines = len(file.lines.items())
+                if file.lines.has_key(nr):
+                    file.executed_lines = file.executed_lines + 1
+            nr = nr + 1
 
     def write_header(self, of, basename, path_to_helpers, total_lines, executed_lines):
 
@@ -178,7 +182,7 @@ class ShcovDataOutput:
 	    line.replace("<", "&lt;")
 	    line.replace('"', '&quot;')
 
-	    if file.lines.has_key(nr):
+	    if file.lines.has_key(nr) and self.line_is_code(line):
 		of.write("""<span class="lineNum">     %5d</span><span class="lineCov">         %6d :  %s</span>\n""" %
 			 (nr, file.lines[nr], line))
 	    else:

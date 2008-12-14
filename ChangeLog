@@ -1,4 +1,8 @@
 shcov (2)
+	* Make total and executed line numbers agree and just skip 'done'
+	which are marked as executed (in for, but not while!)
+
+	* Larger test cases.
 
 shcov (1)
         * Initial release
