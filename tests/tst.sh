@@ -56,6 +56,8 @@ case $# in
         ;;
 esac
 
+echo mibb >&2
+
 dn=`dirname $0`
 echo "mibb" > /tmp/a
 
