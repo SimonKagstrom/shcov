@@ -13,9 +13,11 @@
 
 # export PS4='SHCOV:::${BASH_SOURCE}:::${LINENO}::: SHCOV:'
 
-import os, sys, subprocess, pickle, signal, getopt
+import os, sys, subprocess, pickle, signal
 
-sys.path.append(os.path.abspath(sys.path[0] + "/../"))
+base_dir = os.path.abspath(sys.path[0] + "/../")
+sys.path =  [base_dir] + sys.path
+
 import shcov
 
 from shcov.file import File
@@ -104,14 +106,23 @@ if __name__ == "__main__":
     outpath = "/tmp/shcov"
     shell = ["bash", "-x"]
 
-    optlist, args = getopt.gnu_getopt(sys.argv[1:], "ho:s:", ["help", "output=", "shell="])
-    for opt, arg in optlist:
-	if opt in ("-h", "--help"):
-	    usage()
-	if opt in ("-o", "--output"):
-	    outpath = arg
-	if opt in ("-s", "--shell"):
-	    shell = arg.split()
+    # Really, really, ugly, but it's done this way to avoid parsing the
+    # options passed to the shell script
+    last = 1
+    for arg in sys.argv[1:min(len(sys.argv), 3)]:
+        if arg == "-h" or arg == "--help":
+            usage()
+        elif arg.startswith("--output="):
+            last = last + 1
+            outpath = arg.strip("--output=")
+        elif arg.startswith("--shell="):
+            last = last + 1
+            shell = arg.strip("--shell=").split()
+        else:
+            # First non-option
+            break
+    print sys.argv[last:], outpath, shell
+    args = sys.argv[last:]
 
     if len(args) < 1:
 	usage()
