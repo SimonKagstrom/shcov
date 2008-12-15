@@ -10,8 +10,18 @@ mibb() # Other fn syntax
     echo "Perhaps not?"
 }
 
+function hej_hopp { # Yet another
+    echo Hejsan
+}
+
+function hej_hopp2
+{ # Yet yet another
+    echo Hejsan
+}
+
 vobb hejhopp
 vobb tjoho
+hej_hopp2
 echo "al-mibb"
 
 if [ $# -gt 1 ]; then
