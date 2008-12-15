@@ -48,7 +48,7 @@ class ShcovDataOutput:
 	if tmp.startswith('#'):
 	    return False
         # Functions and braces
-	if fn_regexp.match(tmp) or brace_regexp.match(tmp):
+	if tmp.startswith("function") or fn_regexp.match(tmp) or brace_regexp.match(tmp):
 	    return False
         # fi/else/esac etc
 	if else_then_done_regexp.match(tmp):

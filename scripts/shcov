@@ -121,7 +121,6 @@ if __name__ == "__main__":
         else:
             # First non-option
             break
-    print sys.argv[last:], outpath, shell
     args = sys.argv[last:]
 
     if len(args) < 1:
