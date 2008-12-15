@@ -14,7 +14,7 @@
 import os, sys, time, re, getopt, shutil
 
 base_dir = os.path.abspath(sys.path[0] + "/../")
-sys.path.append(base_dir)
+sys.path =  [base_dir] + sys.path
 
 import shcov, shcov.config
 from shcov.file import File
