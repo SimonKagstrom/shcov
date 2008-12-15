@@ -1,4 +1,10 @@
 shcov (2)
+	* Fixed shlcov bug in --script-base= which was ignored when loading
+	source files
+
+	* Option parsing in shcov has been fixed to allow options to the shell
+	scripts
+
 	* Make total and executed line numbers agree and just skip 'done'
 	which are marked as executed (in for, but not while!)
 
