@@ -326,7 +326,7 @@ class ShcovDataOutput:
 	    for name in files:
                 path = os.path.join(root, name)
                 try:
-                    file = shcov.file.load(path)
+                    file = shcov.file.load(path, script_base = self.script_base)
                     self.files.append(file)
                 except ImportError, e:
                     print "Could not load", path, "ignoring"

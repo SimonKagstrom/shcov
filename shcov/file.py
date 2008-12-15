@@ -38,9 +38,9 @@ class File:
 	    self.lines[line_nr] = 1
 
 
-def load(path):
+def load(path, script_base = ''):
     file = pickle.load(open(path))
-    source_file = read_file(file.path)
+    source_file = read_file(script_base + file.path)
 
     m = md5.new()
     m.update(source_file)
