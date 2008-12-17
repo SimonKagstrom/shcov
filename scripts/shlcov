@@ -75,7 +75,7 @@ class ShcovDataOutput:
                     file.executed_lines = file.executed_lines + 1
             nr = nr + 1
 
-    def write_header(self, of, basename, path_to_helpers, total_lines, executed_lines):
+    def write_header(self, of, basename, path_to_helpers, total_lines, executed_lines, is_directory = True):
 
 	# No div-by-zero please
 	if total_lines == 0:
@@ -94,7 +94,36 @@ class ShcovDataOutput:
 
 <body>
 """ % (basename, path_to_helpers)
-
+        legend_file="""        <tr>
+          <td class="legendItem" width="20%">Legend:</td>
+          <td class="legendValue" width="80%" colspan=4>
+            <span class="legendNoCov">
+              not executed
+            </span>
+            <span class="legendCov">
+              executed
+            </span>
+         </td>
+        </tr>
+"""
+        legend_directory="""        <tr>
+          <td class="legendItem" width="20%%">Legend:</td>
+          <td class="legendValue" width="80%%" colspan=4>
+            <span class="coverLegendLo">
+              <b>Low:</b> 0% to 15%
+            </span>
+            <span class="coverLegendMed">
+              <b>Medium:</b> 15% to 50%
+            </span>
+            <span class="coverLegendHi">
+              <b>High:</b> 50% to 100%
+            </span>
+         </td>
+       </tr>
+"""
+        legend = legend_file
+        if is_directory:
+            legend = legend_directory
 	top_table="""  <table width="100%%" border=0 cellspacing=0 cellpadding=0>
     <tr><td class="title">SHCOV by Simon K&aring;gstr&ouml;m</td></tr>
     <tr><td class="ruler"><img src="%sglass.png" width=3 height=3 alt=""></td></tr>
@@ -120,6 +149,7 @@ class ShcovDataOutput:
 	  <td class="headerItem" width="20%%">Executed&nbsp;lines:</td>
 	  <td class="headerValue" width="20%%">%d</td>
 	</tr>
+        %s
 	</table>
       </td>
     </tr>
@@ -127,7 +157,7 @@ class ShcovDataOutput:
   </table>
 """ % (path_to_helpers, basename, time.strftime("%Y-%m-%d"),
        total_lines, (float(executed_lines) / float(total_lines)) * 100,
-       executed_lines)
+       executed_lines, legend)
 
 	of.write(header)
 
@@ -173,7 +203,7 @@ class ShcovDataOutput:
   <br>
 """
 	self.write_header(of, basename, path_to_helpers,
-			  file.total_lines, file.executed_lines)
+			  file.total_lines, file.executed_lines, False)
 
 	of.write(table)
 	nr = 1
@@ -224,7 +254,7 @@ class ShcovDataOutput:
 	    covernum = "coverNumMed"
 	    covertype = "coverPerMed"
 	    color = "amber"
-	if fraction < 25:
+	if fraction < 15:
 	    covernum = "coverNumLo"
 	    covertype = "coverPerLo"
 	    color = "ruby"
