@@ -19,9 +19,22 @@ function hej_hopp2
     echo Hejsan
 }
 
+function in_background()
+{
+    a=0
+    while [ $a -lt 5 ]; do
+        echo "Background job executing..."
+        sleep 1
+        a=$(($a + 1))
+    done
+}
+
 vobb hejhopp
 vobb tjoho
 hej_hopp2
+
+in_background &
+
 echo "al-mibb"
 
 if [ $# -gt 1 ]; then
