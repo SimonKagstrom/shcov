@@ -27,6 +27,7 @@ function in_background()
         sleep 1
         a=$(($a + 1))
     done
+    echo "Background job has finished"
 }
 
 vobb hejhopp

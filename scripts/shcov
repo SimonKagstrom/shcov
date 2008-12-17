@@ -64,10 +64,10 @@ class ShcovCollector:
 	file.add_to_line(line_nr)
         file.save(self.outpath + file.path + ".pkl")
 
-    def run(self):
+    def parse_output(self):
+        """Process the bash stderr output"""
 	self.process = subprocess.Popen( self.shell + self.args,  stdin = sys.stdin,
 					 stdout = sys.stdout, stderr = subprocess.PIPE)
-        ret = None
 	while True:
 	    # Write out everything on stderr
 	    self.process.stderr.flush()
@@ -75,12 +75,19 @@ class ShcovCollector:
 	    line = self.process.stderr.readline()
             self.handle_line(line)
 
-            if ret != None:
-                for line in self.process.stderr.readlines():
-                    self.handle_line(line)
-
-                return ret
             ret = self.process.poll()
+            if ret != None:
+                try:
+                    pid = os.fork()
+                except OSError, e:
+                    raise Exception, "%s [%d]" % (e.strerror, e.errno)
+                if pid == 0:
+                    # Read the last stuff
+                    for line in self.process.stderr.readlines():
+                        self.handle_line(line)
+                    # Save everything
+                    self.save()
+                return ret
 
     def save(self):
 	for file in self.files.values():
@@ -132,9 +139,8 @@ if __name__ == "__main__":
     signal.signal(signal.SIGTERM, sighandler)
     out = 1
     try:
-	out = sc.run()
+	out = sc.parse_output()
     except KeyboardInterrupt, e:
 	# Just save
-	pass
-    sc.save()
+        sc.save()
     sys.exit(out)
