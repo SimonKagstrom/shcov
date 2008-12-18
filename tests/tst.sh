@@ -26,9 +26,11 @@ function in_background()
         echo "Background job executing..."
         sleep 1
         a=$(($a + 1))
-    done
+    done # Hej
     echo "Background job has finished"
 }
+
+first_stuff=1
 
 vobb hejhopp
 vobb tjoho

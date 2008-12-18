@@ -14,15 +14,25 @@ import pickle, md5, os
 from utils import *
 
 class File:
-    def __init__(self, path):
+    def __init__(self, path, source_path = None):
 	self.path = path
+        if source_path == None:
+            self.source_path = path
+        else:
+            self.source_path = source_path
 	self.basename = os.path.basename(path)
 	self.lines = {}
 
 	m = md5.new()
-	m.update(read_file(path))
+	m.update(read_file(self.source_path))
 
 	self.digest = m.digest()
+
+    def set_source_path(self, path):
+        self.source_path = path
+
+    def get_source_path(self):
+        return self.source_path
 
     def save(self, path):
 	outfile = open(path, 'wb')
@@ -48,5 +58,7 @@ def load(path, script_base = ''):
 
     # File has changed
     if digest != file.digest:
-	file = File(file.path)
+	file = File(file.path, source_path = script_base + file.path)
+
+    file.set_source_path(script_base + file.path)
     return file

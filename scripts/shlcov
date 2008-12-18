@@ -24,7 +24,7 @@ from shcov.utils import *
 fn_regexp = re.compile("\A(function[\t, ]+)*[a-z,A-Z,_]+[a-z,A-Z,_,0-9]*[\t, ]*\([\t, ]*\)[\t, ]*")
 brace_regexp = re.compile("\A(\{|\}){1}")
 
-else_then_done_regexp = re.compile("\A(else|then|fi|done|esac|;;){1}")
+else_then_done_regexp = re.compile("\A(else|then|fi|done|esac|do|;;){1}\\b")
 case_nr_regexp = re.compile("\A(([\',\",0-9,a-z,A-Z,_, ]+)|\*{1})\)")
 
 class ShcovDataOutput:
@@ -61,7 +61,7 @@ class ShcovDataOutput:
 	return True
 
     def calculate_statistics(self, file):
-	source_data = read_file(self.script_base + file.path)
+	source_data = read_file( file.get_source_path() )
 
 	# OK, this is ugly: Just put these in the object...
 	file.total_lines = 0
@@ -358,7 +358,7 @@ class ShcovDataOutput:
                 try:
                     file = shcov.file.load(path, script_base = self.script_base)
                     self.files.append(file)
-                except ImportError, e:
+                except Exception, e:
                     print "Could not load", path, "ignoring"
 
 	self.handle_files()
