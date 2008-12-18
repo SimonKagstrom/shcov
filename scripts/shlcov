@@ -28,10 +28,13 @@ else_then_done_regexp = re.compile("\A(else|then|fi|done|esac|do|;;){1}\\b")
 case_nr_regexp = re.compile("\A(([\',\",0-9,a-z,A-Z,_, ]+)|\*{1})\)")
 
 class ShcovDataOutput:
-    def __init__(self, script_base, inpath, outpath):
+    def __init__(self, script_base, inpath, outpath, low_limit = 15, high_limit = 50):
 	self.script_base = script_base
 	self.inpath = inpath
 	self.outpath = outpath
+
+        self.low_limit = low_limit
+        self.high_limit = high_limit
 
 	self.files = []
 
@@ -110,17 +113,17 @@ class ShcovDataOutput:
           <td class="legendItem" width="20%%">Legend:</td>
           <td class="legendValue" width="80%%" colspan=4>
             <span class="coverLegendLo">
-              <b>Low:</b> 0% to 15%
+              <b>Low:</b> 0%% to %d%%
             </span>
             <span class="coverLegendMed">
-              <b>Medium:</b> 15% to 50%
+              <b>Medium:</b> %d%% to %d%%
             </span>
             <span class="coverLegendHi">
-              <b>High:</b> 50% to 100%
+              <b>High:</b> %d%% to 100%%
             </span>
          </td>
        </tr>
-"""
+""" % (self.low_limit, self.low_limit, self.high_limit, self.high_limit)
         legend = legend_file
         if is_directory:
             legend = legend_directory
@@ -250,11 +253,11 @@ class ShcovDataOutput:
 	covernum = "coverNumHi"
 	covertype = "coverPerHi"
 	color = "emerald"
-	if fraction < 50:
+	if fraction < self.high_limit:
 	    covernum = "coverNumMed"
 	    covertype = "coverPerMed"
 	    color = "amber"
-	if fraction < 15:
+	if fraction < self.low_limit:
 	    covernum = "coverNumLo"
 	    covertype = "coverPerLo"
 	    color = "ruby"
@@ -374,21 +377,37 @@ def usage():
     print "Create HTML output of shcov data in 'datadir' in 'outdir'.\n"
     print "Options are"
     print "  --script-base=path   set the base path to lookup script source (default '')"
+    print "  --limit=low,high     set the low and high coverage limits (default 15,50)"
 
     sys.exit(1)
 
 if __name__ == "__main__":
     script_base = ''
+    low_limit = 15
+    high_limit = 50
 
-    optlist, args = getopt.gnu_getopt(sys.argv[1:], "hs:", ["help", "script-base="])
+    try:
+        optlist, args = getopt.gnu_getopt(sys.argv[1:], "hs:l:", ["help", "script-base=", "limit="])
+    except:
+        usage()
+
     for opt, arg in optlist:
 	if opt in ("-h", "--help"):
 	    usage()
 	if opt in ("-s", "--script-base"):
 	    script_base = arg
+	if opt in ("-l", "--limit"):
+            lim = arg.split(",")
+            if len(lim) != 2:
+                usage()
+            try:
+                low_limit = int(lim[0])
+                high_limit = int(lim[1])
+            except:
+                usage()
 
     if len(args) < 2:
 	usage()
 
-    sc = ShcovDataOutput(script_base, args[0], args[1])
+    sc = ShcovDataOutput(script_base, args[0], args[1], low_limit, high_limit)
     sc.run()
