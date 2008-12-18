@@ -1,4 +1,7 @@
 shcov (2)
+	* Added the ability to set low and high percentage limits (the
+	red/orange/green bars)
+
 	* Add legends for files and dirs. This is _directly_ taken from lcov,
 	thanks again for the excellent interface
 
