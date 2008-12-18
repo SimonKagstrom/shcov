@@ -78,3 +78,5 @@ dn=`dirname $0`
 echo "mibb" > /tmp/a
 
 source $dn/second-tst.sh
+
+a=`ls -l /proc`
