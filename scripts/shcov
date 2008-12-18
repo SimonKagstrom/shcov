@@ -13,7 +13,7 @@
 
 # export PS4='SHCOV:::${BASH_SOURCE}:::${LINENO}::: SHCOV:'
 
-import os, sys, subprocess, pickle, signal
+import os, sys, subprocess, pickle, signal, select
 
 base_dir = os.path.abspath(sys.path[0] + "/../")
 sys.path =  [base_dir] + sys.path
@@ -68,13 +68,12 @@ class ShcovCollector:
         """Process the bash stderr output"""
 	self.process = subprocess.Popen( self.shell + self.args,  stdin = sys.stdin,
 					 stdout = sys.stdout, stderr = subprocess.PIPE)
+
+        fd_poll = select.poll()
+        fd_poll.register( self.process.stderr.fileno() )
+
 	while True:
-	    # Write out everything on stderr
-	    self.process.stderr.flush()
-
-	    line = self.process.stderr.readline()
-            self.handle_line(line)
-
+            # Did the process exit?
             ret = self.process.poll()
             if ret != None:
                 try:
@@ -88,6 +87,17 @@ class ShcovCollector:
                     # Save everything
                     self.save()
                 return ret
+
+	    # Write out everything on stderr
+	    self.process.stderr.flush()
+
+            # If stderr is not ready, just continue
+            status = fd_poll.poll()
+            if status == []:
+                continue
+
+	    line = self.process.stderr.readline()
+            self.handle_line(line)
 
     def save(self):
 	for file in self.files.values():

@@ -5,7 +5,8 @@ shcov (2)
 	* shcov now forks a new process to handle the last output lines when
 	the process terminates. The reason is that the script might fork new
 	processes which continue in the background, and this would go amiss if
-	the process exits directly (or would block if it doesn't)
+	the process exits directly (or would block if it doesn't). It also
+	polls stderr to avoid blocking in some cases.
 
 	* stderr which was not SHCOV stuff was by mistake written to stdout,
 	fix this
