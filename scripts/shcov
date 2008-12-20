@@ -54,7 +54,12 @@ class ShcovCollector:
 		file = shcov.file.load(self.outpath + path + ".pkl")
 	    except Exception, e:
 		# Create a new one (no such file)
-		file = File(path)
+                try:
+                    file = File(path)
+                except IOError, e:
+                    # Cannot create the object (file not found most likely),
+                    # just ignore it
+                    return
             # And create the dir to save it in
 	    try:
 		os.makedirs( os.path.dirname(self.outpath + file.path) )
@@ -92,7 +97,7 @@ class ShcovCollector:
 	    self.process.stderr.flush()
 
             # If stderr is not ready, just continue
-            status = fd_poll.poll()
+            status = fd_poll.poll(10)
             if status == []:
                 continue
 
