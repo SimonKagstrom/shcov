@@ -1,3 +1,7 @@
+shcov (3)
+
+        -- Simon Kagstrom <simon.kagstrom@gmail.com>,
+
 shcov (2)
 	* Added the ability to set low and high percentage limits (the
 	red/orange/green bars)
