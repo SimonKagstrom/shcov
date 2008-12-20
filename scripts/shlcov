@@ -78,6 +78,14 @@ class ShcovDataOutput:
                     file.executed_lines = file.executed_lines + 1
             nr = nr + 1
 
+    def get_relative_path_to_helpers(self, path):
+        abs_outpath = os.path.abspath(self.outpath)
+
+        path = path.replace(abs_outpath, '')
+        path.replace('//', '/')
+
+        return "../" * path.count('/')
+
     def write_header(self, of, basename, path_to_helpers, total_lines, executed_lines, is_directory = True):
 
 	# No div-by-zero please
@@ -156,11 +164,11 @@ class ShcovDataOutput:
 	</table>
       </td>
     </tr>
-    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="ruler"><img src="%sglass.png" width=3 height=3 alt=""></td></tr>
   </table>
 """ % (path_to_helpers, basename, time.strftime("%Y-%m-%d"),
        total_lines, (float(executed_lines) / float(total_lines)) * 100,
-       executed_lines, legend)
+       executed_lines, legend, path_to_helpers)
 
 	of.write(header)
 
@@ -175,10 +183,8 @@ class ShcovDataOutput:
     def handle_one_file(self, file):
 	dirname = os.path.dirname(file.path)
 	basename = os.path.basename(file.path)
-	path = self.outpath + os.path.abspath(dirname)
-
-	# FIXME! This is just a hack
-	path = path.replace('//', '/')
+	path = self.outpath + "/root/" + os.path.abspath(dirname)
+        path = path.replace('//', '/')
 
 	try:
 	    os.makedirs( path )
@@ -187,7 +193,7 @@ class ShcovDataOutput:
 	    pass
 
 	of = open(os.path.join(path, basename + ".html"), "w")
-	path_to_helpers = "../" * path.count("/")
+        path_to_helpers = self.get_relative_path_to_helpers(os.path.abspath(path) )
 
 	source_data = read_file(self.script_base + file.path)
 
@@ -319,7 +325,10 @@ class ShcovDataOutput:
 	self.write_directory_header(of)
 
 	for dir in dirs.values():
-	    self.write_directory_line(of, "", dir.name[1:] + "/index.html", dir.name,
+            path = "root/" + dir.name[1:] + "/index.html"
+            path = path.replace('//', '/')
+
+	    self.write_directory_line(of, "", path, dir.name,
 				      dir.total_lines, dir.executed_lines)
 
 	self.write_footer(of)
@@ -327,8 +336,10 @@ class ShcovDataOutput:
 
 	# Create indices in each dir
 	for dir in dirs.values():
-	    path = self.outpath + dir.name
-	    path_to_helpers = "../" * dir.name.count("/")
+	    path = self.outpath + "/root/" + dir.name
+            path = path.replace('//', '/')
+
+            path_to_helpers = self.get_relative_path_to_helpers( os.path.abspath(path) )
 
 	    try:
 		os.makedirs( path )
@@ -373,7 +384,7 @@ class ShcovDataOutput:
                 shutil.copyfile(path, os.path.join(self.outpath, name))
 
 def usage():
-    print "Usage: shlcov [--script-base=path] datadir outdir\n"
+    print "Usage: shlcov [--script-base=path] [--limit=low,high] datadir outdir\n"
     print "Create HTML output of shcov data in 'datadir' in 'outdir'.\n"
     print "Options are"
     print "  --script-base=path   set the base path to lookup script source (default '')"

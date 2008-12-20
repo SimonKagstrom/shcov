@@ -8,10 +8,15 @@ bash scripts. It is used together with the
 .I shcov
 tool which captures runtime coverage data.
 .SH SYNOPSIS
-\fBshlcov [-s|--script-base=path] datadir outdir\fR
+\fBshlcov [-s|--script-base=path] [-l|--limit=low,high] datadir outdir\fR
 .TP
 \fB\-s, --script-base=\fR \fIpath\fR
 set the base path to lookup scripts sources (default is '')\fR
+.PP
+.TP
+\fB\-l, --limit=\fR \fIlow,high\fR
+set the low and high limits coverage limits (displayed in red, amber and green
+respectively in the output). Default is 15,50\fR
 .PP
 .SH HOMEPAGE
 http://shcov.googlecode.com
