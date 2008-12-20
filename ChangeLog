@@ -25,6 +25,8 @@ shcov (2)
 
 	* Larger test cases.
 
+        -- Simon Kagstrom <simon.kagstrom@gmail.com>, Sat Dec 20 09:32:08 CET 2008
+
 shcov (1)
         * Initial release
 
