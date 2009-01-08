@@ -67,7 +67,12 @@ class ShcovCollector:
 		pass
 	    self.files[path] = file
 	file.add_to_line(line_nr)
-        file.save(self.outpath + file.path + ".pkl")
+        try:
+            file.save(self.outpath + file.path + ".pkl")
+        except:
+            # No big deal - just means that we cannot write
+            # to the destination just yet
+            pass
 
     def parse_output(self):
         """Process the bash stderr output"""
