@@ -1,4 +1,6 @@
 shcov (3)
+	* Catch exception if file save fails (this might be because the target
+	dir isn't writable yet, so just ignore it)
 
         -- Simon Kagstrom <simon.kagstrom@gmail.com>,
 
