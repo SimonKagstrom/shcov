@@ -33,12 +33,20 @@ class ShcovCollector:
 	os.environ["PS4"] = "SHCOV:::${BASH_SOURCE}:::${LINENO}::: SHCOV:"
 
 	self.process = None
+        # Counts the number of ' characters. This is to detect (some) multi-line output
+        self.tick_count = 0
 
     def handle_line(self, line):
         """Handle one line of stderr input"""
         if line.find("SHCOV:::") == -1:
-            sys.stderr.write(line)
+            # Three cases: No tick means that the last SHCOV tag was single-line,
+            # one tick means that we're waiting for the end (don't output),
+            # more than one means that we have stderr output with ticks
+            if self.tick_count > 1 or self.tick_count == 0:
+                sys.stderr.write(line)
             return
+        # Reset tick count
+        self.tick_count = line.count("'")
 	parts = line.split(":::")
 
 	file_name = parts[1]
