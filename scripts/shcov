@@ -35,6 +35,7 @@ class ShcovCollector:
 	self.process = None
         # Counts the number of ' characters. This is to detect (some) multi-line output
         self.tick_count = 0
+        self.pid = os.getpid()
 
     def handle_line(self, line):
         """Handle one line of stderr input"""
@@ -54,20 +55,18 @@ class ShcovCollector:
 
 	# Get the file for this path
 	path = os.path.abspath(file_name)
+        path = os.path.realpath(path)
 	try:
 	    file = self.files[path]
 	except KeyError, e:
-	    # Not found, try to load it or otherwise create a new one
-	    try:
-		file = shcov.file.load(self.outpath + path + ".pkl")
-	    except Exception, e:
-		# Create a new one (no such file)
-                try:
-                    file = File(path)
-                except IOError, e:
-                    # Cannot create the object (file not found most likely),
-                    # just ignore it
-                    return
+	    # Not found, create a new one
+            try:
+                file = File(path)
+            except IOError, e:
+                # Cannot create the object (file not found most likely),
+                # just ignore it
+                return
+
             # And create the dir to save it in
 	    try:
 		os.makedirs( os.path.dirname(self.outpath + file.path) )
@@ -76,8 +75,8 @@ class ShcovCollector:
 	    self.files[path] = file
 	file.add_to_line(line_nr)
         try:
-            file.save(self.outpath + file.path + ".pkl")
-        except:
+            file.save(self.outpath + file.path + ".%d.pkl" % (self.pid))
+        except Exception, e:
             # No big deal - just means that we cannot write
             # to the destination just yet
             pass
@@ -119,7 +118,14 @@ class ShcovCollector:
 
     def save(self):
 	for file in self.files.values():
-	    file.save(self.outpath + file.path + ".pkl")
+            # Merge into the (locked) global file and remove the pid-specific
+            # one
+	    file.merge_with_path(self.outpath + file.path + ".pkl")
+
+            # If it hasn't been saved, no need to unlink it
+            if not file.has_been_saved():
+                continue
+            os.unlink( self.outpath + file.path + ".%d.pkl" % (self.pid) )
 
 def usage():
     print "Usage: shcov [-h] [--output=where] [--shell=what] script...\n"

@@ -25,7 +25,7 @@ fn_regexp = re.compile("\A(function[\t, ]+)*[a-z,A-Z,_]+[a-z,A-Z,_,0-9]*[\t, ]*\
 brace_regexp = re.compile("\A(\{|\}){1}")
 
 else_then_done_regexp = re.compile("\A(else|then|fi|done|esac|do|;;){1}\\b")
-case_nr_regexp = re.compile("\A(([\',\",0-9,a-z,A-Z,_, ]+)|\*{1})\)")
+case_nr_regexp = re.compile("\A(([\',\",0-9,a-z,A-Z,_, ]+)|\*{1})\){1}\\Z")
 
 class ShcovDataOutput:
     def __init__(self, script_base, inpath, outpath, low_limit = 15, high_limit = 50):
@@ -366,11 +366,27 @@ class ShcovDataOutput:
 	    os.makedirs( self.outpath )
 	except OSError, e:
 	    pass
+        file_objs = {} # Map names to objs
+
 	for root, dirs, files in os.walk(self.inpath, topdown=False):
 	    for name in files:
                 path = os.path.join(root, name)
                 try:
                     file = shcov.file.load(path, script_base = self.script_base)
+                    if file_objs.has_key(file.path):
+                        other = file_objs[file.path]
+
+                        # If the files are the same, merge them
+                        if file.digest == other.digest:
+                            other.merge_object(file)
+                            continue
+                        else:
+                            # Not the same, replace and take the newest
+                            if file.get_source_ctime() > other.get_source_ctime():
+                                file_objs[file.path] = file
+                                self.files.remove(other)
+
+                    file_objs[file.path] = file
                     self.files.append(file)
                 except Exception, e:
                     print "Could not load", path, "ignoring"

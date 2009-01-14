@@ -1,3 +1,26 @@
+shcov (4)
+	* Dereference symbolic links so that only one of each script is
+	present in the data.
+
+	* In shlcov, don't assume a 1-1 mapping of data files to output
+	files. There can be multiple data files per output file, and in this
+	case, they will be merged or if the source files are different, the
+	newest is taken.
+
+	* A race condition when storing the data files is now handled. The
+	problem was that the data file is written continuously, and if several
+	instances of the same script are executed concurrently, the file could
+	be overwritten.
+
+	This is solved by storing a PID-local file during execution and then
+	merging in into the global data file when the process exits. The
+	global file uses file locking.
+
+	* Fixed regexp for case statements (some valid statements could be
+	marked as non-code)
+
+        -- Simon Kagstrom <simon.kagstrom@gmail.com>,
+
 shcov (3)
 	* Fix an output bug for things like a=`ls -l /proc`, which would print
 	out on the console with shcov but not otherwise. The fix will not work
@@ -6,7 +29,7 @@ shcov (3)
 	* Catch exception if file save fails (this might be because the target
 	dir isn't writable yet, so just ignore it)
 
-        -- Simon Kagstrom <simon.kagstrom@gmail.com>,
+        -- Simon Kagstrom <simon.kagstrom@gmail.com>, Sun Jan 11 20:31:12 CET 2009
 
 shcov (2)
 	* Added the ability to set low and high percentage limits (the
