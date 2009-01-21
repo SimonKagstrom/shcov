@@ -19,7 +19,7 @@ shcov (4)
 	* Fixed regexp for case statements (some valid statements could be
 	marked as non-code)
 
-        -- Simon Kagstrom <simon.kagstrom@gmail.com>,
+        -- Simon Kagstrom <simon.kagstrom@gmail.com>, Wed Jan 21 18:15:33 CET 2009
 
 shcov (3)
 	* Fix an output bug for things like a=`ls -l /proc`, which would print
