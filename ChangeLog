@@ -1,3 +1,7 @@
+shcov (5)
+
+        -- Simon Kagstrom <simon.kagstrom@gmail.com>,
+
 shcov (4)
 	* Dereference symbolic links so that only one of each script is
 	present in the data.
