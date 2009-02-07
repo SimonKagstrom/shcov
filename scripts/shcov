@@ -24,15 +24,15 @@ from shcov.file import File
 
 class ShcovCollector:
     def __init__(self, args, outpath = "/tmp/shcov", shell = ["bash", "-x"]):
-	self.files = {}
-	self.args = args
-	self.outpath = outpath
-	self.shell = shell
+        self.files = {}
+        self.args = args
+        self.outpath = outpath
+        self.shell = shell
 
-	# Where we execute this script
-	os.environ["PS4"] = "SHCOV:::${BASH_SOURCE}:::${LINENO}::: SHCOV:"
+        # Where we execute this script
+        os.environ["PS4"] = "SHCOV:::${BASH_SOURCE}:::${LINENO}::: SHCOV:"
 
-	self.process = None
+        self.process = None
         # Counts the number of ' characters. This is to detect (some) multi-line output
         self.tick_count = 0
         self.pid = os.getpid()
@@ -48,18 +48,18 @@ class ShcovCollector:
             return
         # Reset tick count
         self.tick_count = line.count("'")
-	parts = line.split(":::")
+        parts = line.split(":::")
 
-	file_name = parts[1]
-	line_nr = parts[2]
+        file_name = parts[1]
+        line_nr = parts[2]
 
-	# Get the file for this path
-	path = os.path.abspath(file_name)
+        # Get the file for this path
+        path = os.path.abspath(file_name)
         path = os.path.realpath(path)
-	try:
-	    file = self.files[path]
-	except KeyError, e:
-	    # Not found, create a new one
+        try:
+            file = self.files[path]
+        except KeyError, e:
+            # Not found, create a new one
             try:
                 file = File(path)
             except IOError, e:
@@ -68,12 +68,12 @@ class ShcovCollector:
                 return
 
             # And create the dir to save it in
-	    try:
-		os.makedirs( os.path.dirname(self.outpath + file.path) )
-	    except OSError, e:
-		pass
-	    self.files[path] = file
-	file.add_to_line(line_nr)
+            try:
+                os.makedirs( os.path.dirname(self.outpath + file.path) )
+            except OSError, e:
+                pass
+            self.files[path] = file
+        file.add_to_line(line_nr)
         try:
             file.save(self.outpath + file.path + ".%d.pkl" % (self.pid))
         except Exception, e:
@@ -83,13 +83,13 @@ class ShcovCollector:
 
     def parse_output(self):
         """Process the bash stderr output"""
-	self.process = subprocess.Popen( self.shell + self.args,  stdin = sys.stdin,
-					 stdout = sys.stdout, stderr = subprocess.PIPE)
+        self.process = subprocess.Popen( self.shell + self.args,  stdin = sys.stdin,
+                                         stdout = sys.stdout, stderr = subprocess.PIPE)
 
         fd_poll = select.poll()
         fd_poll.register( self.process.stderr.fileno() )
 
-	while True:
+        while True:
             # Did the process exit?
             ret = self.process.poll()
             if ret != None:
@@ -105,22 +105,22 @@ class ShcovCollector:
                     self.save()
                 return ret
 
-	    # Write out everything on stderr
-	    self.process.stderr.flush()
+            # Write out everything on stderr
+            self.process.stderr.flush()
 
             # If stderr is not ready, just continue
             status = fd_poll.poll(10)
             if status == []:
                 continue
 
-	    line = self.process.stderr.readline()
+            line = self.process.stderr.readline()
             self.handle_line(line)
 
     def save(self):
-	for file in self.files.values():
+        for file in self.files.values():
             # Merge into the (locked) global file and remove the pid-specific
             # one
-	    file.merge_with_path(self.outpath + file.path + ".pkl")
+            file.merge_with_path(self.outpath + file.path + ".pkl")
 
             # If it hasn't been saved, no need to unlink it
             if not file.has_been_saved():
@@ -143,7 +143,7 @@ def sighandler(signum, frame):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-	usage()
+        usage()
 
     outpath = "/tmp/shcov"
     shell = ["bash", "-x"]
@@ -166,15 +166,15 @@ if __name__ == "__main__":
     args = sys.argv[last:]
 
     if len(args) < 1:
-	usage()
+        usage()
 
     sc = ShcovCollector(args, outpath = outpath, shell = shell)
     glob_sc = sc
     signal.signal(signal.SIGTERM, sighandler)
     out = 1
     try:
-	out = sc.parse_output()
+        out = sc.parse_output()
     except KeyboardInterrupt, e:
-	# Just save
+        # Just save
         sc.save()
     sys.exit(out)

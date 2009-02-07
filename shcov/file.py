@@ -15,22 +15,22 @@ from utils import *
 
 class File:
     def __init__(self, path, source_path = None):
-	self.path = path
+        self.path = path
         if source_path == None:
             self.source_path = path
         else:
             self.source_path = source_path
-	self.basename = os.path.basename(path)
-	self.lines = {}
-	self.is_saved = False
+        self.basename = os.path.basename(path)
+        self.lines = {}
+        self.is_saved = False
 
-	m = md5.new()
-	m.update(read_file(self.source_path))
+        m = md5.new()
+        m.update(read_file(self.source_path))
 
         st = os.lstat(self.source_path)
         self.source_file_ctime = st[stat.ST_CTIME]        
 
-	self.digest = m.digest()
+        self.digest = m.digest()
 
     def get_source_ctime(self):
         """Return the creation time of the script"""
@@ -46,10 +46,10 @@ class File:
         return self.is_saved
 
     def save(self, path):
-	outfile = open(path, 'wb')
+        outfile = open(path, 'wb')
 
-	pickle.dump(self, outfile)
-	outfile.close()
+        pickle.dump(self, outfile)
+        outfile.close()
         self.is_saved = True
 
     def merge_object(self, obj):
@@ -88,11 +88,11 @@ class File:
         f.close() # Also unlocks the file
 
     def add_to_line(self, line_nr):
-	line_nr = int(line_nr)
-	try:
-	    self.lines[line_nr] = self.lines[line_nr] + 1
-	except KeyError, e:
-	    self.lines[line_nr] = 1
+        line_nr = int(line_nr)
+        try:
+            self.lines[line_nr] = self.lines[line_nr] + 1
+        except KeyError, e:
+            self.lines[line_nr] = 1
 
 
 def load(path, script_base = ''):
@@ -105,7 +105,7 @@ def load(path, script_base = ''):
 
     # File has changed
     if digest != file.digest:
-	file = File(file.path, source_path = script_base + file.path)
+        file = File(file.path, source_path = script_base + file.path)
 
     file.set_source_path(script_base + file.path)
     return file

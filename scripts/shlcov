@@ -29,14 +29,14 @@ case_nr_regexp = re.compile("\A(([\',\",0-9,a-z,A-Z,_, ]+)|\*{1})\){1}\\Z")
 
 class ShcovDataOutput:
     def __init__(self, script_base, inpath, outpath, low_limit = 15, high_limit = 50):
-	self.script_base = script_base
-	self.inpath = inpath
-	self.outpath = outpath
+        self.script_base = script_base
+        self.inpath = inpath
+        self.outpath = outpath
 
         self.low_limit = low_limit
         self.high_limit = high_limit
 
-	self.files = []
+        self.files = []
 
         # Setup the data path (helper files)
         try:
@@ -47,33 +47,33 @@ class ShcovDataOutput:
             self.data_path = "/usr/share/" + shcov.config.PROGRAM_NAME.lower() + "/data"
 
     def line_is_code(self, line):
-	tmp = line.strip()
-	if tmp.startswith('#'):
-	    return False
+        tmp = line.strip()
+        if tmp.startswith('#'):
+            return False
         # Functions and braces
-	if tmp.startswith("function") or fn_regexp.match(tmp) or brace_regexp.match(tmp):
-	    return False
+        if tmp.startswith("function") or fn_regexp.match(tmp) or brace_regexp.match(tmp):
+            return False
         # fi/else/esac etc
-	if else_then_done_regexp.match(tmp):
-	    return False
+        if else_then_done_regexp.match(tmp):
+            return False
         if case_nr_regexp.match(tmp):
             return False
         # Empty string
-	if tmp == "":
-	    return False
-	return True
+        if tmp == "":
+            return False
+        return True
 
     def calculate_statistics(self, file):
-	source_data = read_file( file.get_source_path() )
+        source_data = read_file( file.get_source_path() )
 
-	# OK, this is ugly: Just put these in the object...
-	file.total_lines = 0
-	file.executed_lines = 0
+        # OK, this is ugly: Just put these in the object...
+        file.total_lines = 0
+        file.executed_lines = 0
 
-	nr = 1
-	for line in source_data.splitlines():
-	    if self.line_is_code(line):
-		file.total_lines = file.total_lines + 1
+        nr = 1
+        for line in source_data.splitlines():
+            if self.line_is_code(line):
+                file.total_lines = file.total_lines + 1
                 if file.lines.has_key(nr):
                     file.executed_lines = file.executed_lines + 1
             nr = nr + 1
@@ -88,12 +88,12 @@ class ShcovDataOutput:
 
     def write_header(self, of, basename, path_to_helpers, total_lines, executed_lines, is_directory = True):
 
-	# No div-by-zero please
-	if total_lines == 0:
-	    total_lines = 1
+        # No div-by-zero please
+        if total_lines == 0:
+            total_lines = 1
 
-	# Taken from lcov
-	header="""<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">
+        # Taken from lcov
+        header="""<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">
 
 <html lang=\"en\">
 
@@ -135,33 +135,33 @@ class ShcovDataOutput:
         legend = legend_file
         if is_directory:
             legend = legend_directory
-	top_table="""  <table width="100%%" border=0 cellspacing=0 cellpadding=0>
+        top_table="""  <table width="100%%" border=0 cellspacing=0 cellpadding=0>
     <tr><td class="title">SHCOV by Simon K&aring;gstr&ouml;m</td></tr>
     <tr><td class="ruler"><img src="%sglass.png" width=3 height=3 alt=""></td></tr>
 
     <tr>
       <td width="100%%">
-	<table cellpadding=1 border=0 width="100%%">
-	<tr>
-	  <td class="headerItem" width="20%%">Current&nbsp;view:</td>
-	  <td class="headerValue" width="80%%" colspan=4>%s</td>
-	</tr>
-	<tr>
-	  <td class="headerItem" width="20%%">Date:</td>
-	  <td class="headerValue" width="20%%">%s</td>
-	  <td width="20%%"></td>
-	  <td class="headerItem" width="20%%">Instrumented&nbsp;lines:</td>
-	  <td class="headerValue" width="20%%">%d</td>
-	</tr>
-	<tr>
-	  <td class="headerItem" width="20%%">Code&nbsp;covered:</td>
-	  <td class="headerValue" width="20%%">%.1f %%</td>
-	  <td width="20%%"></td>
-	  <td class="headerItem" width="20%%">Executed&nbsp;lines:</td>
-	  <td class="headerValue" width="20%%">%d</td>
-	</tr>
+        <table cellpadding=1 border=0 width="100%%">
+        <tr>
+          <td class="headerItem" width="20%%">Current&nbsp;view:</td>
+          <td class="headerValue" width="80%%" colspan=4>%s</td>
+        </tr>
+        <tr>
+          <td class="headerItem" width="20%%">Date:</td>
+          <td class="headerValue" width="20%%">%s</td>
+          <td width="20%%"></td>
+          <td class="headerItem" width="20%%">Instrumented&nbsp;lines:</td>
+          <td class="headerValue" width="20%%">%d</td>
+        </tr>
+        <tr>
+          <td class="headerItem" width="20%%">Code&nbsp;covered:</td>
+          <td class="headerValue" width="20%%">%.1f %%</td>
+          <td width="20%%"></td>
+          <td class="headerItem" width="20%%">Executed&nbsp;lines:</td>
+          <td class="headerValue" width="20%%">%d</td>
+        </tr>
         %s
-	</table>
+        </table>
       </td>
     </tr>
     <tr><td class="ruler"><img src="%sglass.png" width=3 height=3 alt=""></td></tr>
@@ -170,34 +170,34 @@ class ShcovDataOutput:
        total_lines, (float(executed_lines) / float(total_lines)) * 100,
        executed_lines, legend, path_to_helpers)
 
-	of.write(header)
+        of.write(header)
 
-	of.write(top_table)
+        of.write(top_table)
 
 
     def write_footer(self, of):
-	of.write("""</body>
+        of.write("""</body>
 </html>""")
 
 
     def handle_one_file(self, file):
-	dirname = os.path.dirname(file.path)
-	basename = os.path.basename(file.path)
-	path = self.outpath + "/root/" + os.path.abspath(dirname)
+        dirname = os.path.dirname(file.path)
+        basename = os.path.basename(file.path)
+        path = self.outpath + "/root/" + os.path.abspath(dirname)
         path = path.replace('//', '/')
 
-	try:
-	    os.makedirs( path )
-	except OSError, e:
-	    # This is OK (already exists)
-	    pass
+        try:
+            os.makedirs( path )
+        except OSError, e:
+            # This is OK (already exists)
+            pass
 
-	of = open(os.path.join(path, basename + ".html"), "w")
+        of = open(os.path.join(path, basename + ".html"), "w")
         path_to_helpers = self.get_relative_path_to_helpers(os.path.abspath(path) )
 
-	source_data = read_file(self.script_base + file.path)
+        source_data = read_file(self.script_base + file.path)
 
-	table="""  <table cellpadding=0 cellspacing=0 border=0>
+        table="""  <table cellpadding=0 cellspacing=0 border=0>
     <tr>
       <td><br></td>
     </tr>
@@ -205,38 +205,38 @@ class ShcovDataOutput:
       <td><pre class="source">
 """
 
-	table_end="""</pre>
+        table_end="""</pre>
       </td>
     </tr>
   </table>
   <br>
 """
-	self.write_header(of, basename, path_to_helpers,
-			  file.total_lines, file.executed_lines, False)
+        self.write_header(of, basename, path_to_helpers,
+                          file.total_lines, file.executed_lines, False)
 
-	of.write(table)
-	nr = 1
-	for line in source_data.splitlines():
-	    line.replace(">", "&gt;")
-	    line.replace("<", "&lt;")
-	    line.replace('"', '&quot;')
+        of.write(table)
+        nr = 1
+        for line in source_data.splitlines():
+            line.replace(">", "&gt;")
+            line.replace("<", "&lt;")
+            line.replace('"', '&quot;')
 
-	    if file.lines.has_key(nr) and self.line_is_code(line):
-		of.write("""<span class="lineNum">     %5d</span><span class="lineCov">         %6d :  %s</span>\n""" %
-			 (nr, file.lines[nr], line))
-	    else:
-		if self.line_is_code(line):
-		    of.write("""<span class="lineNum">     %5d</span><span class="lineNoCov">              0 :  %s</span>\n""" %
-			     (nr, line))
-		else:
-		    of.write("""<span class="lineNum">     %5d</span>                :  %s\n""" % (nr, line))
-	    nr = nr + 1
-	of.write(table_end)
+            if file.lines.has_key(nr) and self.line_is_code(line):
+                of.write("""<span class="lineNum">     %5d</span><span class="lineCov">         %6d :  %s</span>\n""" %
+                         (nr, file.lines[nr], line))
+            else:
+                if self.line_is_code(line):
+                    of.write("""<span class="lineNum">     %5d</span><span class="lineNoCov">              0 :  %s</span>\n""" %
+                             (nr, line))
+                else:
+                    of.write("""<span class="lineNum">     %5d</span>                :  %s\n""" % (nr, line))
+            nr = nr + 1
+        of.write(table_end)
 
-	self.write_footer(of)
+        self.write_footer(of)
 
     def write_directory_header(self, of):
-	of.write("""<center>
+        of.write("""<center>
   <table width="80%" cellpadding=2 cellspacing=1 border=0>
 
     <tr>
@@ -253,25 +253,25 @@ class ShcovDataOutput:
 """)
 
     def write_directory_line(self, of, path_to_helpers, linkname, name, total_lines, executed_lines):
-	fraction = (float(executed_lines) / float(total_lines)) * 100
+        fraction = (float(executed_lines) / float(total_lines)) * 100
 
-	# Setup some data depending on the coverage
-	covernum = "coverNumHi"
-	covertype = "coverPerHi"
-	color = "emerald"
-	if fraction < self.high_limit:
-	    covernum = "coverNumMed"
-	    covertype = "coverPerMed"
-	    color = "amber"
-	if fraction < self.low_limit:
-	    covernum = "coverNumLo"
-	    covertype = "coverPerLo"
-	    color = "ruby"
+        # Setup some data depending on the coverage
+        covernum = "coverNumHi"
+        covertype = "coverPerHi"
+        color = "emerald"
+        if fraction < self.high_limit:
+            covernum = "coverNumMed"
+            covertype = "coverPerMed"
+            color = "amber"
+        if fraction < self.low_limit:
+            covernum = "coverNumLo"
+            covertype = "coverPerLo"
+            color = "ruby"
 
-	of.write("""    <tr>
+        of.write("""    <tr>
       <td class="coverFile"><a href="%s">%s</a></td>
       <td class="coverBar" align="center">
-	<table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline"><img src="%s%s.png" width=%d height=10 alt="%.1f%%"><img src="%ssnow.png" width=%d height=10 alt="%1f%%"></td></tr></table>
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline"><img src="%s%s.png" width=%d height=10 alt="%.1f%%"><img src="%ssnow.png" width=%d height=10 alt="%1f%%"></td></tr></table>
       </td>
       <td class="%s">%.1f&nbsp;%%</td>
       <td class="%s">%d&nbsp;/&nbsp;%d&nbsp;lines</td>
@@ -281,95 +281,95 @@ class ShcovDataOutput:
 
 
     def handle_files(self):
-	"Output all shcov data"
+        "Output all shcov data"
 
-	class Dir:
-	    def __init__(self, name):
-		self.name = name
-		self.basename = os.path.basename(name)
-		self.total_lines = 0
-		self.executed_lines = 0
-		self.files = []
+        class Dir:
+            def __init__(self, name):
+                self.name = name
+                self.basename = os.path.basename(name)
+                self.total_lines = 0
+                self.executed_lines = 0
+                self.files = []
 
-	    def add_file(self, file):
-		self.total_lines = self.total_lines + file.total_lines
-		self.executed_lines = self.executed_lines + file.executed_lines
-		self.files.append(file)
+            def add_file(self, file):
+                self.total_lines = self.total_lines + file.total_lines
+                self.executed_lines = self.executed_lines + file.executed_lines
+                self.files.append(file)
 
-	dirs = {}
+        dirs = {}
 
-	for file in self.files:
-	    self.calculate_statistics(file)
+        for file in self.files:
+            self.calculate_statistics(file)
 
-	# Create dirs
-	for file in self.files:
-	    dirname = os.path.dirname(file.path)
+        # Create dirs
+        for file in self.files:
+            dirname = os.path.dirname(file.path)
 
-	    try:
-		dir = dirs[dirname]
-	    except KeyError, e:
-		dir = Dir(dirname)
-		dirs[dirname] = dir
-	    dir.add_file(file)
+            try:
+                dir = dirs[dirname]
+            except KeyError, e:
+                dir = Dir(dirname)
+                dirs[dirname] = dir
+            dir.add_file(file)
 
-	total_lines = 0
-	executed_lines = 0
+        total_lines = 0
+        executed_lines = 0
 
-	for dir in dirs.values():
-	    total_lines = total_lines + dir.total_lines
-	    executed_lines = executed_lines + dir.executed_lines
+        for dir in dirs.values():
+            total_lines = total_lines + dir.total_lines
+            executed_lines = executed_lines + dir.executed_lines
 
-	of = open(os.path.join(self.outpath, "index.html"), "w")
-	self.write_header(of, "/", "", total_lines, executed_lines)
+        of = open(os.path.join(self.outpath, "index.html"), "w")
+        self.write_header(of, "/", "", total_lines, executed_lines)
 
-	self.write_directory_header(of)
+        self.write_directory_header(of)
 
-	for dir in dirs.values():
+        for dir in dirs.values():
             path = "root/" + dir.name[1:] + "/index.html"
             path = path.replace('//', '/')
 
-	    self.write_directory_line(of, "", path, dir.name,
-				      dir.total_lines, dir.executed_lines)
+            self.write_directory_line(of, "", path, dir.name,
+                                      dir.total_lines, dir.executed_lines)
 
-	self.write_footer(of)
-	of.close()
+        self.write_footer(of)
+        of.close()
 
-	# Create indices in each dir
-	for dir in dirs.values():
-	    path = self.outpath + "/root/" + dir.name
+        # Create indices in each dir
+        for dir in dirs.values():
+            path = self.outpath + "/root/" + dir.name
             path = path.replace('//', '/')
 
             path_to_helpers = self.get_relative_path_to_helpers( os.path.abspath(path) )
 
-	    try:
-		os.makedirs( path )
-	    except OSError, e:
-		pass
+            try:
+                os.makedirs( path )
+            except OSError, e:
+                pass
 
-	    of = open(os.path.join(path, "index.html"), "w")
+            of = open(os.path.join(path, "index.html"), "w")
 
-	    self.write_header(of, dir.basename, path_to_helpers, dir.total_lines, dir.executed_lines)
-	    self.write_directory_header(of)
-	    for file in dir.files:
-		self.write_directory_line(of, path_to_helpers, file.basename + ".html", file.basename,
-					file.total_lines, file.executed_lines)
-	    self.write_footer(of)
-	    of.close()
+            self.write_header(of, dir.basename, path_to_helpers, dir.total_lines, dir.executed_lines)
+            self.write_directory_header(of)
+            for file in dir.files:
+                self.write_directory_line(of, path_to_helpers, file.basename + ".html", file.basename,
+                                        file.total_lines, file.executed_lines)
+            self.write_footer(of)
+            of.close()
 
-	# Create the files one by one
-	for file in self.files:
-	    self.handle_one_file(file)
+        # Create the files one by one
+        for file in self.files:
+            self.handle_one_file(file)
 
 
     def run(self):
-	try:
-	    os.makedirs( self.outpath )
-	except OSError, e:
-	    pass
+        try:
+            os.makedirs( self.outpath )
+        except OSError, e:
+            pass
         file_objs = {} # Map names to objs
 
-	for root, dirs, files in os.walk(self.inpath, topdown=False):
-	    for name in files:
+        for root, dirs, files in os.walk(self.inpath, topdown=False):
+            for name in files:
                 path = os.path.join(root, name)
                 try:
                     file = shcov.file.load(path, script_base = self.script_base)
@@ -391,11 +391,11 @@ class ShcovDataOutput:
                 except Exception, e:
                     print "Could not load", path, "ignoring"
 
-	self.handle_files()
+        self.handle_files()
 
         # And copy all the data
-	for root, dirs, files in os.walk(self.data_path, topdown=False):
-	    for name in files:
+        for root, dirs, files in os.walk(self.data_path, topdown=False):
+            for name in files:
                 path = os.path.join(root, name)
                 shutil.copyfile(path, os.path.join(self.outpath, name))
 
@@ -419,11 +419,11 @@ if __name__ == "__main__":
         usage()
 
     for opt, arg in optlist:
-	if opt in ("-h", "--help"):
-	    usage()
-	if opt in ("-s", "--script-base"):
-	    script_base = arg
-	if opt in ("-l", "--limit"):
+        if opt in ("-h", "--help"):
+            usage()
+        if opt in ("-s", "--script-base"):
+            script_base = arg
+        if opt in ("-l", "--limit"):
             lim = arg.split(",")
             if len(lim) != 2:
                 usage()
@@ -434,7 +434,7 @@ if __name__ == "__main__":
                 usage()
 
     if len(args) < 2:
-	usage()
+        usage()
 
     sc = ShcovDataOutput(script_base, args[0], args[1], low_limit, high_limit)
     sc.run()
