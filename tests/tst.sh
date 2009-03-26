@@ -54,6 +54,20 @@ for file in `ls *`; do
     echo $file
 done
 
+# Not yet handled
+cat <<EOF
+vobb
+mibb
+EOF
+
+# Handled
+for idx in 1 \
+    2 \
+    3 \
+    4 ; do
+    echo mibb
+done
+
 case $# in
     1)
         echo "1 args"

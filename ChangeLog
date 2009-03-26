@@ -1,6 +1,5 @@
 shcov (5)
-	* Hanndle "Here documents" and backslashed line-continuations in
-	shlcov (Heiko Nardmann)
+	* Handle backslashed line-continuations in shlcov (Heiko Nardmann)
 
 	* Convert tabs to spaces
 
