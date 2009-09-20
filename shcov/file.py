@@ -28,7 +28,7 @@ class File:
         m.update(read_file(self.source_path))
 
         st = os.lstat(self.source_path)
-        self.source_file_ctime = st[stat.ST_CTIME]        
+        self.source_file_ctime = st[stat.ST_CTIME]
 
         self.digest = m.digest()
 
