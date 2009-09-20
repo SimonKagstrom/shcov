@@ -1,9 +1,13 @@
 shcov (5)
+	* Try to import hashlib to aovid deprecation warning with Python
+	2.6. If it doesn't exist, use the md5 module
+
 	* Handle backslashed line-continuations in shlcov (Heiko Nardmann)
 
 	* Convert tabs to spaces
 
-        -- Simon Kagstrom <simon.kagstrom@gmail.com>,
+        -- Simon Kagstrom <simon.kagstrom@gmail.com>, Sun Sep 20 08:17:53 CEST 2009
+
 
 shcov (4)
 	* Dereference symbolic links so that only one of each script is
