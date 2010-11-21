@@ -32,7 +32,7 @@ rm -fr %{buildroot}
 %defattr(-, root, root)
 %{_bindir}/%{name}
 %{_bindir}/shlcov
-%{python_sitelib}/%{name}-5-py2.6.egg-info
+%{python_sitelib}/%{name}-5-py%{python_version}.egg-info
 %{python_sitelib}/%{name}/__init__.py
 %{python_sitelib}/%{name}/__init__.pyc
 %{python_sitelib}/%{name}/config.py
@@ -57,6 +57,9 @@ rm -fr %{buildroot}
 %{_datarootdir}/%{name}/data/snow.png
 
 %changelog
+* Sun Nov 21 2010 Norbert Varzariu <loomsen@googlemail.com> - 5.0-2
+- fix hardcoded python version (2.6 -> %{python_version})
+
 * Thu Jul 01 2010 : Norbert Varzariu <loomsen@googlemail.com> - 5.0-1
 - clean up spec file
 
