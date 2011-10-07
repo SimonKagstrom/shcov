@@ -226,9 +226,10 @@ class ShcovDataOutput:
         previousLineIsContinued = False
         firstLineOfPossibleMultiLineBlock = nr
         for line in source_data.splitlines():
-            line.replace(">", "&gt;")
-            line.replace("<", "&lt;")
-            line.replace('"', '&quot;')
+            line = line.replace("&", "&amp;")
+            line = line.replace(">", "&gt;")
+            line = line.replace("<", "&lt;")
+            line = line.replace('"', '&quot;')
 
             if file.lines.has_key(nr) and self.line_is_code(line) or nr>1 and previousLineIsContinued == True and file.lines.has_key(firstLineOfPossibleMultiLineBlock):
                 if previousLineIsContinued == True:
