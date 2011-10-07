@@ -1,5 +1,10 @@
+shcov (6)
+	* Correct encoding of <, > and " characters (Rolf Eike Beer)
+
+        -- Simon Kagstrom <simon.kagstrom@gmail.com>,
+
 shcov (5)
-	* Try to import hashlib to aovid deprecation warning with Python
+	* Try to import hashlib to avoid deprecation warning with Python
 	2.6. If it doesn't exist, use the md5 module
 
 	* Handle backslashed line-continuations in shlcov (Heiko Nardmann)
