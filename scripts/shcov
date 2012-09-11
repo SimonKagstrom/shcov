@@ -83,8 +83,8 @@ class ShcovCollector:
 
     def parse_output(self):
         """Process the bash stderr output"""
-        self.process = subprocess.Popen( self.shell + self.args,  stdin = sys.stdin,
-                                         stdout = sys.stdout, stderr = subprocess.PIPE)
+        self.process = subprocess.Popen( self.shell + self.args,
+                                         stderr = subprocess.PIPE)
 
         fd_poll = select.poll()
         fd_poll.register( self.process.stderr.fileno() )
