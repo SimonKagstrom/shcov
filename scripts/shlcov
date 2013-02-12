@@ -26,6 +26,7 @@ brace_regexp = re.compile("\A(\{|\}){1}")
 
 else_then_done_regexp = re.compile("\A(else|then|fi|done|esac|do|;;){1}\\b")
 case_nr_regexp = re.compile("\A(([\',\",0-9,a-z,A-Z,_, ]+)|\*{1})\){1}\\Z")
+heredoc_regexp = re.compile(".*<<-?\'?([a-zA-Z]+)\'?")
 
 class ShcovDataOutput:
     def __init__(self, script_base, inpath, outpath, low_limit = 15, high_limit = 50):
@@ -72,6 +73,8 @@ class ShcovDataOutput:
 
         nr = 1
         previousLineIsContinued = False
+        heredoc_end = False
+        heredoc_cnt = 0
         for line in source_data.splitlines():
             if self.line_is_code(line):
                 file.total_lines = file.total_lines + 1
@@ -80,6 +83,22 @@ class ShcovDataOutput:
 
             if line.endswith("\\"):
                 previousLineIsContinued = True
+            elif heredoc_regexp.match(line):
+                previousLineIsContinued = True
+                heredoc_end = heredoc_regexp.match(line).groups()[0]
+                # If the line has been executed, use the same count
+                # for the rest of the here-document.
+                if nr in sourcefile.lines:
+                    heredoc_cnt = sourcefile.lines[nr]
+                else:
+                    heredoc_cnt = 0
+            elif heredoc_end:
+                # If the initial line was executed, add the rest of the
+                # here-document lines to executed lines.
+                if nr not in sourcefile.lines and heredoc_cnt > 0:
+                    sourcefile.lines[nr] = heredoc_cnt
+                if line == heredoc_end:
+                    heredoc_end = False
             else:
                 previousLineIsContinued = False
 
