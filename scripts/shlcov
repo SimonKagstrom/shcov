@@ -11,7 +11,7 @@
 ##
 ######################################################################
 
-import os, sys, time, re, getopt, shutil
+import os, sys, time, re, getopt, shutil, pkg_resources
 
 base_dir = os.path.abspath(sys.path[0] + "/../")
 sys.path =  [base_dir] + sys.path
@@ -44,8 +44,8 @@ class ShcovDataOutput:
             self.data_path = base_dir + "/data"
             os.lstat(self.data_path)
         except:
-            # No such dir, fall back to /usr/share
-            self.data_path = "/usr/share/" + shcov.config.PROGRAM_NAME.lower() + "/data"
+            # No such dir, use the pkg_resource directory
+            self.data_path = os.path.dirname(pkg_resources.resource_filename("shcov", 'data/gcov.css'))
 
     def line_is_code(self, line):
         tmp = line.strip()

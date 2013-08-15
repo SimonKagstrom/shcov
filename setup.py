@@ -25,11 +25,9 @@ setup(name='%s' % (config.PROGRAM_NAME).lower(),
 
       packages = ['shcov'],
       scripts = ['scripts/shcov', 'scripts/shlcov'],
+      package_data = {'shcov' : ['data/gcov.css', 'data/*.png']},
 
-      data_files = [('share/%s/data' % (config.PROGRAM_NAME.lower()),
-		     ['data/amber.png', 'data/gcov.css', 'data/ruby.png',
-                      'data/emerald.png', 'data/glass.png', 'data/snow.png', ]),
-		    ('share/doc/%s/' % (config.PROGRAM_NAME.lower()), ['README']),
+      data_files = [('share/doc/%s/' % (config.PROGRAM_NAME.lower()), ['README']),
 		    ('share/doc/%s/' % (config.PROGRAM_NAME.lower()), ['COPYING']),
                     ('share/man/man1/', ['shcov.1', 'shlcov.1']),
                     ],
