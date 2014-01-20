@@ -95,9 +95,6 @@ class ShcovCollector:
         self.process = subprocess.Popen( self.shell + self.args,
                                          stderr = subprocess.PIPE)
 
-        fd_poll = select.poll()
-        fd_poll.register( self.process.stderr.fileno() )
-
         while True:
             # Did the process exit?
             ret = self.process.poll()
@@ -118,7 +115,7 @@ class ShcovCollector:
             self.process.stderr.flush()
 
             # If stderr is not ready, just continue
-            status = fd_poll.poll(10)
+            status = select.select([self.process.stderr.fileno()], [], [], 10)
             if status == []:
                 continue
 
