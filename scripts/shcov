@@ -50,6 +50,15 @@ class ShcovCollector:
         self.tick_count = line.count("'")
         parts = line.split(":::")
 
+        # This line had better have four parts. If it doesn't it
+        # probably means that the directory depth exceeded the PS4 limit
+        # This isn't the most elegant way of handling this, but at least
+        # the code won't thrown an exception later.
+        if len(parts) != 4:
+            # Whine and continue
+            print >>sys.stderr, 'Unable to parse line\n', line
+            return
+
         file_name = parts[1]
         line_nr = parts[2]
 
