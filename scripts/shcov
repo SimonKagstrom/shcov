@@ -156,15 +156,17 @@ if __name__ == "__main__":
             usage()
         elif arg.startswith("--output="):
             last = last + 1
-            outpath = arg.strip("--output=")
+            outpath = arg.split("--output=")[1]
         elif arg.startswith("--shell="):
             last = last + 1
-            shell = arg.strip("--shell=").split()
+            shell = arg.split("--shell=")[1].split()
         else:
             # First non-option
             break
     args = sys.argv[last:]
 
+    print outpath
+    print shell
     if len(args) < 1:
         usage()
 
