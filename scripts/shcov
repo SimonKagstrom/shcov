@@ -147,7 +147,7 @@ def sighandler(signum, frame):
     signal.signal(signal.SIGTERM, signal.SIG_DFL)
     glob_sc.save()
     glob_sc.process.kill()
-    sys.exit(1)
+    sys.exit(0)
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
