@@ -145,6 +145,7 @@ glob_sc = None
 
 def sighandler(signum, frame):
     glob_sc.save()
+    glob_sc.process.kill()
     sys.exit(1)
 
 if __name__ == "__main__":
