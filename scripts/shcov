@@ -144,6 +144,7 @@ def usage():
 glob_sc = None
 
 def sighandler(signum, frame):
+    signal.signal(signal.SIGTERM, signal.SIG_DFL)
     glob_sc.save()
     glob_sc.process.kill()
     sys.exit(1)
