@@ -1,0 +1,9 @@
+NOTE!
+
+I've added all shcov functionality into kcov,
+
+  http://simonkagstrom.github.io/kcov/
+
+so please use that instead. The kcov source code can be found at
+
+  https://github.com/SimonKagstrom/kcov
