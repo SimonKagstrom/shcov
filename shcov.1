@@ -1,4 +1,4 @@
-.TH SHCOV 1 "December 14, 2008"
+.TH SHCOV 1 "February 26, 2015"
 .SH NAME
 shcov - collect execution coverage information for shell scripts
 .SH DESCRIPTION
@@ -11,12 +11,21 @@ tool to create HTML output of coverage information.
 \fBshcov [--output=where] [--shell=shell] script ...\fR
 .TP
 \fB\--output=\fR \fIwhere\fR
-Place output in \fIwhere\fR instead of \fI/tmp/shcov\fR
+Place output in \fIwhere\fR instead of the default.  By default, \fIshcov\fR
+will read the POSIX \fITMPDIR\fR environment variable for the path of the
+temporary directory, before defaulting to \fI/tmp\fR.  This path is then used
+as a prefix to the data directory, i.e. \fI/tmp/shcov\fR.
 .PP
 .TP
 \fB\--shell=\fR \fIwhat\fR
 Use shell command line \fIwhat\fR instead of \fIbash -x\fR
 .PP
+.SH ENVIRONMENT
+\fBSHCOV_DATADIR\fR
+This can be used instead of or in conjunction with the \fI\--output\fR option.
+If the \fI\--output\fR option is set, this will override the \fISHCOV_DATADIR\fR
+setting.  This is useful for setting the path globally, such as within a build
+chroot or on a build machine.
 .SH HOMEPAGE
 http://shcov.googlecode.com
 .SH SEE ALSO
